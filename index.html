@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Speed Test</title>
+    <style>
+        :root {
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--color-slate-900);
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .emoji {
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .best-score {
+            text-align: center;
+            color: var(--color-slate-500);
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 0 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: var(--color-teal-500);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-teal-600);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(var(--color-brown-600-rgb), 0.12);
+            color: var(--color-slate-900);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(var(--color-brown-600-rgb), 0.2);
+        }
+
+        .config-group {
+            margin-bottom: 20px;
+        }
+
+        .config-label {
+            display: block;
+            font-weight: 600;
+            color: var(--color-slate-900);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .config-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .config-options.time {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .option-btn {
+            padding: 12px;
+            border: 2px solid rgba(var(--color-brown-600-rgb), 0.2);
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .option-btn:hover {
+            border-color: var(--color-teal-500);
+        }
+
+        .option-btn.selected {
+            background: var(--color-teal-500);
+            color: white;
+            border-color: var(--color-teal-500);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: var(--color-slate-900);
+        }
+
+        .timer {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .timer.green { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+        .timer.yellow { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+        .timer.red { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+
+        .question {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            color: var(--color-slate-900);
+            margin-bottom: 20px;
+            min-height: 60px;
+        }
+
+        .input-display {
+            font-size: 32px;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid rgba(var(--color-brown-600-rgb), 0.2);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            min-height: 60px;
+            background: var(--color-cream-100);
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .numpad-btn {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            background: var(--color-gray-200);
+            color: var(--color-slate-900);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .numpad-btn:active {
+            transform: scale(0.95);
+        }
+
+        .numpad-btn:hover {
+            background: rgba(var(--color-brown-600-rgb), 0.15);
+        }
+
+        .numpad-btn.zero {
+            grid-column: span 2;
+        }
+
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 80px;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .feedback.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .result-stats {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-score {
+            font-size: 64px;
+            font-weight: bold;
+            color: var(--color-teal-500);
+            margin-bottom: 10px;
+        }
+
+        .result-details {
+            font-size: 18px;
+            color: var(--color-slate-500);
+            margin: 8px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            .question {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Utama -->
+        <div id="menuScreen" class="card">
+            <div class="emoji">🧮</div>
+            <h1>Math Speed Test</h1>
+            <div class="best-score">Best Score: <span id="bestScoreDisplay">0</span></div>
+            <button class="btn btn-primary" onclick="showConfig()">Mulai Permainan</button>
+        </div>
+        <div id="menuDescription" class="description">
+            Math Speed Test adalah platform untuk melatih kecepatan hitung Anda dengan berbagai operasi matematika dan waktu yang dapat disesuaikan. Jawab 20 soal sebelum waktu habis dan tingkatkan skor Anda!
+        </div>
+
+        <!-- Konfigurasi -->
+        <div id="configScreen" class="card hidden">
+            <h1>Konfigurasi</h1>
+            <div class="config-group">
+                <label class="config-label">Pilih Waktu:</label>
+                <div class="config-options time">
+                    <button class="option-btn" onclick="selectTime(15)">15s</button>
+                    <button class="option-btn selected" onclick="selectTime(30)">30s</button>
+                    <button class="option-btn" onclick="selectTime(45)">45s</button>
+                    <button class="option-btn" onclick="selectTime(60)">60s</button>
+                </div>
+            </div>
+            <div class="config-group">
+                <label class="config-label">Pilih Operasi:</label>
+                <div class="config-options">
+                    <button class="option-btn selected" onclick="selectOperation('mixed')">Campuran</button>
+                    <button class="option-btn" onclick="selectOperation('add')">Hanya +</button>
+                    <button class="option-btn" onclick="selectOperation('subtract')">Hanya -</button>
+                    <button class="option-btn" onclick="selectOperation('multiply')">Hanya ×</button>
+                    <button class="option-btn" onclick="selectOperation('divide')">Hanya ÷</button>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="startGame()">Mulai</button>
+            <button class="btn btn-secondary" onclick="backToMenu()">Kembali</button>
+        </div>
+
+        <!-- Permainan -->
+        <div id="gameScreen" class="card hidden">
+            <div class="game-header">
+                <span>Soal <span id="questionNumber">1</span>/20</span>
+                <span>Skor: <span id="score">0</span></span>
+            </div>
+            <div id="timer" class="timer green">30</div>
+            <div id="question" class="question">5 + 3 = ?</div>
+            <div id="inputDisplay" class="input-display"></div>
+            <div class="numpad">
+                <button class="numpad-btn" onclick="addDigit('1')">1</button>
+                <button class="numpad-btn" onclick="addDigit('2')">2</button>
+                <button class="numpad-btn" onclick="addDigit('3')">3</button>
+                <button class="numpad-btn" onclick="addDigit('4')">4</button>
+                <button class="numpad-btn" onclick="addDigit('5')">5</button>
+                <button class="numpad-btn" onclick="addDigit('6')">6</button>
+                <button class="numpad-btn" onclick="addDigit('7')">7</button>
+                <button class="numpad-btn" onclick="addDigit('8')">8</button>
+                <button class="numpad-btn" onclick="addDigit('9')">9</button>
+                <button class="numpad-btn zero" onclick="addDigit('0')">0</button>
+                <button class="numpad-btn" onclick="backspace()">⌫</button>
+            </div>
+            <button class="btn btn-primary" onclick="submitAnswer()">OK</button>
+        </div>
+
+        <!-- Hasil -->
+        <div id="resultScreen" class="card hidden">
+            <div class="emoji">🏆</div>
+            <h1>Hasil Permainan</h1>
+            <div class="result-stats">
+                <div class="result-score"><span id="finalScore">0</span></div>
+                <div class="result-details">Benar: <span id="correctCount">0</span></div>
+                <div class="result-details">Salah: <span id="wrongCount">0</span></div>
+                <div class="result-details">Soal Terjawab: <span id="answeredCount">0</span>/20</div>
+                <div class="result-details">Waktu: <span id="timeUsed">0</span>s</div>
+            </div>
+            <button class="btn btn-primary" onclick="playAgain()">Main Lagi</button>
+            <button class="btn btn-secondary" onclick="reconfigure()">Konfigurasi Ulang</button>
+            <button class="btn btn-secondary" onclick="backToMenu()">Menu Utama</button>
+        </div>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <script>
+        // State
+        let bestScore = 0;
+        let selectedTime = 30;
+        let selectedOperation = 'mixed';
+        let currentQuestion = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let timeRemaining = 30;
+        let timerInterval = null;
+        let currentAnswer = 0;
+        let userInput = '';
+        let startTime = 0;
+
+        // Load best score
+        const savedBestScore = localStorage.getItem('mathSpeedTestBestScore');
+        if (savedBestScore) {
+            bestScore = parseInt(savedBestScore);
+            document.getElementById('bestScoreDisplay').textContent = bestScore;
+        }
+
+        function showConfig() {
+            document.getElementById('menuScreen').classList.add('hidden');
+            document.getElementById('menuDescription').classList.add('hidden');
+            document.getElementById('configScreen').classList.remove('hidden');
+        }
+
+        function backToMenu() {
+            document.getElementById('configScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('menuScreen').classList.remove('hidden');
+            document.getElementById('menuDescription').classList.remove('hidden');
+        }
+
+        function selectTime(time) {
+            selectedTime = time;
+            document.querySelectorAll('.config-options.time .option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        function selectOperation(operation) {
+            selectedOperation = operation;
+            document.querySelectorAll('.config-options:not(.time) .option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        function startGame() {
+            // Reset game state
+            currentQuestion = 0;
+            score = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            timeRemaining = selectedTime;
+            userInput = '';
+            startTime = Date.now();
+
+            // Show game screen
+            document.getElementById('configScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+
+            // Update UI
+            document.getElementById('score').textContent = score;
+            document.getElementById('timer').textContent = timeRemaining;
+            document.getElementById('inputDisplay').textContent = '';
+
+            // Generate first question
+            generateQuestion();
+
+            // Start timer
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function generateQuestion() {
+            currentQuestion++;
+            document.getElementById('questionNumber').textContent = currentQuestion;
+
+            let left, right, operator, operatorSymbol;
+            
+            // Generate two random numbers
+            let a = Math.floor(Math.random() * 12) + 1;
+            let b = Math.floor(Math.random() * 12) + 1;
+
+            // CRITICAL: Ensure left is always >= right
+            left = Math.max(a, b);
+            right = Math.min(a, b);
+
+            // Select operation
+            const operations = {
+                'mixed': ['+', '-', '*', '/'],
+                'add': ['+'],
+                'subtract': ['-'],
+                'multiply': ['*'],
+                'divide': ['/']
+            };
+
+            const ops = operations[selectedOperation];
+            operator = ops[Math.floor(Math.random() * ops.length)];
+
+            // For division, ensure exact division
+            if (operator === '/') {
+                right = Math.floor(Math.random() * 12) + 1;
+                left = right * (Math.floor(Math.random() * 12) + 1);
+            }
+
+            // Calculate answer
+            switch(operator) {
+                case '+':
+                    currentAnswer = left + right;
+                    operatorSymbol = '+';
+                    break;
+                case '-':
+                    currentAnswer = left - right;
+                    operatorSymbol = '-';
+                    break;
+                case '*':
+                    currentAnswer = left * right;
+                    operatorSymbol = '×';
+                    break;
+                case '/':
+                    currentAnswer = left / right;
+                    operatorSymbol = '÷';
+                    break;
+            }
+
+            document.getElementById('question').textContent = `${left} ${operatorSymbol} ${right} = ?`;
+            userInput = '';
+            document.getElementById('inputDisplay').textContent = '';
+        }
+
+        function updateTimer() {
+            timeRemaining--;
+            document.getElementById('timer').textContent = timeRemaining;
+
+            const timerElement = document.getElementById('timer');
+            if (timeRemaining <= 5) {
+                timerElement.className = 'timer red';
+            } else if (timeRemaining <= 10) {
+                timerElement.className = 'timer yellow';
+            } else {
+                timerElement.className = 'timer green';
+            }
+
+            if (timeRemaining <= 0) {
+                endGame();
+            }
+        }
+
+        function addDigit(digit) {
+            userInput += digit;
+            document.getElementById('inputDisplay').textContent = userInput;
+        }
+
+        function backspace() {
+            userInput = userInput.slice(0, -1);
+            document.getElementById('inputDisplay').textContent = userInput;
+        }
+
+        function submitAnswer() {
+            if (userInput === '') return;
+
+            const answer = parseInt(userInput);
+            
+            if (answer === currentAnswer) {
+                score++;
+                correctAnswers++;
+                showFeedback('✓', '#27ae60');
+            } else {
+                wrongAnswers++;
+                showFeedback('✗', '#dc2626');
+            }
+
+            document.getElementById('score').textContent = score;
+
+            if (currentQuestion >= 20) {
+                endGame();
+            } else {
+                generateQuestion();
+            }
+        }
+
+        function showFeedback(symbol, color) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = symbol;
+            feedback.style.color = color;
+            feedback.classList.add('show');
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 500);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            const timeUsed = selectedTime - timeRemaining;
+            const totalAnswered = correctAnswers + wrongAnswers;
+
+            // Update best score
+            if (score > bestScore) {
+                bestScore = score;
+                localStorage.setItem('mathSpeedTestBestScore', bestScore);
+                document.getElementById('bestScoreDisplay').textContent = bestScore;
+            }
+
+            // Show results
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('wrongCount').textContent = wrongAnswers;
+            document.getElementById('answeredCount').textContent = totalAnswered;
+            document.getElementById('timeUsed').textContent = timeUsed;
+        }
+
+        function playAgain() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            startGame();
+        }
+
+        function reconfigure() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('configScreen').classList.remove('hidden');
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('gameScreen').classList.contains('hidden')) return;
+
+            if (e.key >= '0' && e.key <= '9') {
+                addDigit(e.key);
+            } else if (e.key === 'Backspace') {
+                e.preventDefault();
+                backspace();
+            } else if (e.key === 'Enter') {
+                submitAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
